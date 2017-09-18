@@ -6,6 +6,7 @@ from torch.autograd import Variable
 from torch.utils.data import DataLoader
 from torchvision import datasets, transforms
 
+# customize nn Modules generator and discriminator
 class generator(nn.Module):
     # Network Architecture is exactly same as in infoGAN (https://arxiv.org/abs/1606.03657)
     # Architecture : FC1024_BR-FC7x7x128_BR-(64)4dc2s_BR-(1)4dc2s_S
@@ -21,7 +22,13 @@ class generator(nn.Module):
             self.input_width = 64
             self.input_dim = 62
             self.output_dim = 3
+        elif dataset == 'solar-panel':
+            self.input_height = 128
+            self.input_width = 128
+            self.input_dim = 62
+            self.output_dim = 1
 
+        # nn.Sequential is a collection of many neural network functions
         self.fc = nn.Sequential(
             nn.Linear(self.input_dim, 1024),
             nn.BatchNorm1d(1024),
@@ -60,6 +67,11 @@ class discriminator(nn.Module):
             self.input_height = 64
             self.input_width = 64
             self.input_dim = 3
+            self.output_dim = 1
+        elif dataset == 'solar-panel':
+            self.input_height = 128
+            self.input_width = 128
+            self.input_dim = 1
             self.output_dim = 1
 
         self.conv = nn.Sequential(
