@@ -22,7 +22,7 @@ class generator(nn.Module):
             self.input_width = 64
             self.input_dim = 62
             self.output_dim = 3
-        elif dataset == 'solar-panel':
+        elif dataset == 'wood':
             self.input_height = 128
             self.input_width = 128
             self.input_dim = 62
@@ -38,6 +38,7 @@ class generator(nn.Module):
             nn.ReLU(),
         )
         self.deconv = nn.Sequential(
+            # ConvTrnaspose2d(in_channels,out_channels,kernel_size,stride,padding)
             nn.ConvTranspose2d(128, 64, 4, 2, 1),
             nn.BatchNorm2d(64),
             nn.ReLU(),
@@ -48,6 +49,7 @@ class generator(nn.Module):
 
     def forward(self, input):
         x = self.fc(input)
+        # view is like reshape in numpy array
         x = x.view(-1, 128, (self.input_height // 4), (self.input_width // 4))
         x = self.deconv(x)
 
@@ -68,7 +70,7 @@ class discriminator(nn.Module):
             self.input_width = 64
             self.input_dim = 3
             self.output_dim = 1
-        elif dataset == 'solar-panel':
+        elif dataset == 'wood':
             self.input_height = 128
             self.input_width = 128
             self.input_dim = 1
@@ -92,6 +94,7 @@ class discriminator(nn.Module):
 
     def forward(self, input):
         x = self.conv(input)
+        # flatten
         x = x.view(-1, 128 * (self.input_height // 4) * (self.input_width // 4))
         x = self.fc(x)
 
@@ -119,6 +122,7 @@ class GAN(object):
         if self.gpu_mode:
             self.G.cuda()
             self.D.cuda()
+            # measure Binary Cross Entropy Loss
             self.BCE_loss = nn.BCELoss().cuda()
         else:
             self.BCE_loss = nn.BCELoss()
@@ -143,6 +147,9 @@ class GAN(object):
             self.data_loader = utils.load_celebA('data/celebA', transform=transforms.Compose(
                 [transforms.CenterCrop(160), transforms.Scale(64), transforms.ToTensor()]), batch_size=self.batch_size,
                                                  shuffle=True)
+        elif self.dataset == 'wood':
+            ''' not finish yet '''
+
         self.z_dim = 62
 
         # fixed noise
@@ -171,8 +178,12 @@ class GAN(object):
             epoch_start_time = time.time()
             for iter, (x_, _) in enumerate(self.data_loader):
                 if iter == self.data_loader.dataset.__len__() // self.batch_size:
+                    #print('iter=',self.data_loader.dataset.__len__())
+                    #print('x_:',x_)
+                    #print(' _', _)
                     break
 
+                # create a random numbers from a uniform distribution on the interval [0,1)
                 z_ = torch.rand((self.batch_size, self.z_dim))
 
                 if self.gpu_mode:
@@ -180,7 +191,7 @@ class GAN(object):
                 else:
                     x_, z_ = Variable(x_), Variable(z_)
 
-                # update D network
+                ## update D network
                 self.D_optimizer.zero_grad()
 
                 D_real = self.D(x_)
@@ -194,9 +205,10 @@ class GAN(object):
                 self.train_hist['D_loss'].append(D_loss.data[0])
 
                 D_loss.backward()
+                # perform a single optimization step
                 self.D_optimizer.step()
 
-                # update G network
+                ## update G network
                 self.G_optimizer.zero_grad()
 
                 G_ = self.G(z_)
@@ -252,7 +264,8 @@ class GAN(object):
 
         utils.save_images(samples[:image_frame_dim * image_frame_dim, :, :, :], [image_frame_dim, image_frame_dim],
                           self.result_dir + '/' + self.dataset + '/' + self.model_name + '/' + self.model_name + '_epoch%03d' % epoch + '.png')
-
+    
+    # save trained model
     def save(self):
         save_dir = os.path.join(self.save_dir, self.dataset, self.model_name)
 

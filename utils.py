@@ -122,3 +122,10 @@ def initialize_weights(net):
         elif isinstance(m, nn.Linear):
             m.weight.data.normal_(0, 0.02)
             m.bias.data.zero_()
+
+class load_wood(dataset):
+
+    def __init__(self, split, transform=None, data_dir=None):
+
+
+
