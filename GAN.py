@@ -1,4 +1,4 @@
-import utils, torch, time, os, pickle
+import utils, torch, time, os, pickle, cv2
 import numpy as np
 import torch.nn as nn
 import torch.optim as optim
@@ -148,7 +148,7 @@ class GAN(object):
                 [transforms.CenterCrop(160), transforms.Scale(64), transforms.ToTensor()]), batch_size=self.batch_size,
                                                  shuffle=True)
         elif self.dataset == 'wood':
-            ''' not finish yet '''
+            self.data_loader = load_wood(data_dir='data/wood')
 
         self.z_dim = 62
 

@@ -1,9 +1,11 @@
 import os, gzip, torch
+import cv2
 import torch.nn as nn
 import numpy as np
 import scipy.misc
 import imageio
 import matplotlib.pyplot as plt
+from torch.utils.data import Dataset
 
 def load_mnist(dataset):
     data_dir = os.path.join("./data", dataset)
@@ -123,9 +125,19 @@ def initialize_weights(net):
             m.weight.data.normal_(0, 0.02)
             m.bias.data.zero_()
 
-class load_wood(dataset):
+class load_wood(Dataset):    
+    '''wood texture dataset'''
 
-    def __init__(self, split, transform=None, data_dir=None):
+    def __init__(self, data_dir, transform=None):
+        
+        self.data_dir = data_dir        
+        # read images
+            
 
-
+    def __getitem__(self, index):
+        img_name = os.path.join(self.data_dir) 
+        
+    def __len__(self):
+        return len(self.images)
+        
 
