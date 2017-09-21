@@ -6,6 +6,7 @@ import numpy as np
 import scipy.misc
 import imageio
 import matplotlib.pyplot as plt
+import matplotlib.image as mpimg
 from torch.utils.data import Dataset
 
 def load_mnist(dataset):
@@ -133,15 +134,26 @@ class load_wood(Dataset):
         
         self.data_dir = data_dir        
         self.transform = transform
-        imgs = []
+        self.imgs = []
+        self.labels = []
+        i = 0
+        #print(len(imgs))
         # read images
-        for filename in glob.glob(data_dir):
-            print(filename)            
+        for filename in glob.glob(data_dir + '/*'):
+            #print(filename)            
+            self.imgs.append(mpimg.imread(filename))
+            self.labels.append('0')
+
+        print(len(self.imgs))
+        print(len(self.labels))
+        #plt.imshow(imgs[0])
+        #plt.show()
 
     def __getitem__(self, index):
-        img_name = os.path.join(self.data_dir) 
-        
+        #img_name = os.path.join(self.data_dir) 
+        return len(self.imgs)
+ 
     def __len__(self):
-        return len(self.images)
+        return len(self.imgs)
         
 
