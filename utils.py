@@ -1,5 +1,6 @@
 import os, gzip, torch
 import cv2
+import glob
 import torch.nn as nn
 import numpy as np
 import scipy.misc
@@ -131,8 +132,11 @@ class load_wood(Dataset):
     def __init__(self, data_dir, transform=None):
         
         self.data_dir = data_dir        
+        self.transform = transform
+        imgs = []
         # read images
-            
+        for filename in glob.glob(data_dir):
+            print(filename)            
 
     def __getitem__(self, index):
         img_name = os.path.join(self.data_dir) 
