@@ -134,6 +134,7 @@ class load_wood(Dataset):
 
     def __init__(self, data_dir, transform=None):
         '''initialize image paths and preprocessing module'''
+        #collect image paths using map
         self.image_paths = list(map(lambda x: os.path.join(data_dir, x), os.listdir(data_dir)))
         self.transform = transform
 
@@ -142,9 +143,10 @@ class load_wood(Dataset):
         image_path = self.image_paths[index]
         print(image_path)
         image = Image.open(image_path).convert('RGB')
+        label = 1
         if self.transform is not None:
             image = self.transform(image)
-        return image
+        return image, label
  
     def __len__(self):
         '''return the total number of image files'''

@@ -26,7 +26,7 @@ class generator(nn.Module):
             self.input_height = 128
             self.input_width = 128
             self.input_dim = 62
-            self.output_dim = 1
+            self.output_dim = 3
 
         # nn.Sequential is a collection of many neural network functions
         self.fc = nn.Sequential(
@@ -73,7 +73,7 @@ class discriminator(nn.Module):
         elif dataset == 'wood':
             self.input_height = 128
             self.input_width = 128
-            self.input_dim = 1
+            self.input_dim = 3
             self.output_dim = 1
 
         self.conv = nn.Sequential(
@@ -149,7 +149,7 @@ class GAN(object):
                                                  shuffle=True)
         elif self.dataset == 'wood':
             transform = transforms.Compose([transforms.ToTensor(),transforms.Normalize((0.5,0.5,0.5),(0.5,0.5,0.5))]) 
-            self.data_loader = DataLoader(utils.load_wood(data_dir='data/wood',transform=transform), batch_size=self.batch_size, shuffle=True)
+            self.data_loader = DataLoader(utils.load_wood(data_dir='data/wood/ok',transform=transform), batch_size=self.batch_size, shuffle=True)
 
         self.z_dim = 62
 
@@ -178,6 +178,7 @@ class GAN(object):
             self.G.train()
             epoch_start_time = time.time()
             for iter, (x_, _) in enumerate(self.data_loader):
+            #for iter, x_ in enumerate(self.data_loader):
                 if iter == self.data_loader.dataset.__len__() // self.batch_size:
                     #print('iter=',self.data_loader.dataset.__len__())
                     #print('x_:',x_)
