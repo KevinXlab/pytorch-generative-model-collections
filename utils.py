@@ -7,6 +7,7 @@ import scipy.misc
 import imageio
 import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
+from PIL import Image
 from torch.utils.data import Dataset
 
 def load_mnist(dataset):
@@ -127,33 +128,27 @@ def initialize_weights(net):
             m.weight.data.normal_(0, 0.02)
             m.bias.data.zero_()
 
+'''custom dataset compatible with rebuilt DataLoader'''
 class load_wood(Dataset):    
     '''wood texture dataset'''
 
     def __init__(self, data_dir, transform=None):
-        
-        self.data_dir = data_dir        
+        '''initialize image paths and preprocessing module'''
+        self.image_paths = list(map(lambda x: os.path.join(data_dir, x), os.listdir(data_dir)))
         self.transform = transform
-        self.imgs = []
-        self.labels = []
-        i = 0
-        #print(len(imgs))
-        # read images
-        for filename in glob.glob(data_dir + '/*'):
-            #print(filename)            
-            self.imgs.append(mpimg.imread(filename))
-            self.labels.append('0')
-
-        print(len(self.imgs))
-        print(len(self.labels))
-        #plt.imshow(imgs[0])
-        #plt.show()
 
     def __getitem__(self, index):
-        #img_name = os.path.join(self.data_dir) 
-        return len(self.imgs)
+        '''reads an image from a file and preprocesses it and returns'''
+        image_path = self.image_paths[index]
+        print(image_path)
+        image = Image.open(image_path).convert('RGB')
+        if self.transform is not None:
+            image = self.transform(image)
+        return image
  
     def __len__(self):
-        return len(self.imgs)
+        '''return the total number of image files'''
+        #print(len(self.image_paths))
+        return len(self.image_paths)
         
 
