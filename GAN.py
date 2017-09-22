@@ -148,7 +148,8 @@ class GAN(object):
                 [transforms.CenterCrop(160), transforms.Scale(64), transforms.ToTensor()]), batch_size=self.batch_size,
                                                  shuffle=True)
         elif self.dataset == 'wood':
-            self.data_loader = utils.load_wood(data_dir='data/wood')
+            transform = transforms.Compose([transforms.ToTensor(),transforms.Normalize((0.5,0.5,0.5),(0.5,0.5,0.5))]) 
+            self.data_loader = DataLoader(utils.load_wood(data_dir='data/wood',transform=transform), batch_size=self.batch_size, shuffle=True)
 
         self.z_dim = 62
 
