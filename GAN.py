@@ -23,8 +23,8 @@ class generator(nn.Module):
             self.input_dim = 62
             self.output_dim = 3
         elif dataset == 'wood':
-            self.input_height = 128
-            self.input_width = 128
+            self.input_height = 64
+            self.input_width = 64
             self.input_dim = 62
             self.output_dim = 3
 
@@ -71,8 +71,8 @@ class discriminator(nn.Module):
             self.input_dim = 3
             self.output_dim = 1
         elif dataset == 'wood':
-            self.input_height = 128
-            self.input_width = 128
+            self.input_height = 64
+            self.input_width = 64
             self.input_dim = 3
             self.output_dim = 1
 
@@ -148,8 +148,7 @@ class GAN(object):
                 [transforms.CenterCrop(160), transforms.Scale(64), transforms.ToTensor()]), batch_size=self.batch_size,
                                                  shuffle=True)
         elif self.dataset == 'wood':
-            transform = transforms.Compose([transforms.ToTensor(),transforms.Normalize((0.5,0.5,0.5),(0.5,0.5,0.5))]) 
-            self.data_loader = DataLoader(utils.load_wood(data_dir='data/wood/ok',transform=transform), batch_size=self.batch_size, shuffle=True)
+            self.data_loader = utils.load_wood(data_dir='data/wood/ok', batch_size=self.batch_size)
 
         self.z_dim = 62
 
@@ -181,6 +180,7 @@ class GAN(object):
             #for iter, x_ in enumerate(self.data_loader):
                 if iter == self.data_loader.dataset.__len__() // self.batch_size:
                     #print('iter=',self.data_loader.dataset.__len__())
+                    #print(iter)
                     #print('x_:',x_)
                     #print(' _', _)
                     break
@@ -221,9 +221,8 @@ class GAN(object):
                 G_loss.backward()
                 self.G_optimizer.step()
 
-                if ((iter + 1) % 100) == 0:
-                    print("Epoch: [%2d] [%4d/%4d] D_loss: %.8f, G_loss: %.8f" %
-                          ((epoch + 1), (iter + 1), self.data_loader.dataset.__len__() // self.batch_size, D_loss.data[0], G_loss.data[0]))
+                if ((iter + 1) % 10) == 0:
+                    print("Epoch: [%2d] [%4d/%4d] D_loss: %.8f, G_loss: %.8f" %((epoch + 1), (iter + 1), self.data_loader.dataset.__len__() // self.batch_size, D_loss.data[0], G_loss.data[0]))
 
             self.train_hist['per_epoch_time'].append(time.time() - epoch_start_time)
             self.visualize_results((epoch+1))

@@ -8,7 +8,8 @@ import imageio
 import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
 from PIL import Image
-from torch.utils.data import Dataset
+from torch.utils.data import Dataset, DataLoader
+from torchvision import transforms
 
 def load_mnist(dataset):
     data_dir = os.path.join("./data", dataset)
@@ -129,20 +130,30 @@ def initialize_weights(net):
             m.bias.data.zero_()
 
 '''custom dataset compatible with rebuilt DataLoader'''
-class load_wood(Dataset):    
+def load_wood(data_dir, batch_size):
+    transform = transforms.Compose([transforms.ToTensor(), transforms.Normalize((0.5,0.5,0.5),(0.5,0.5,0.5))])
+    dataset = wood_folder(data_dir, transform)
+    data_loader = DataLoader(dataset=dataset, batch_size=batch_size, shuffle=True)
+
+    return data_loader
+
+class wood_folder(Dataset):    
     '''wood texture dataset'''
 
     def __init__(self, data_dir, transform=None):
         '''initialize image paths and preprocessing module'''
-        #collect image paths using map
+        # collect image paths using map
         self.image_paths = list(map(lambda x: os.path.join(data_dir, x), os.listdir(data_dir)))
         self.transform = transform
 
     def __getitem__(self, index):
         '''reads an image from a file and preprocesses it and returns'''
         image_path = self.image_paths[index]
-        print(image_path)
+        #print(image_path)
+        size = 64
+        #print(image_path)
         image = Image.open(image_path).convert('RGB')
+        image = image.resize((size,size), Image.ANTIALIAS)
         label = 1
         if self.transform is not None:
             image = self.transform(image)
@@ -152,5 +163,3 @@ class load_wood(Dataset):
         '''return the total number of image files'''
         #print(len(self.image_paths))
         return len(self.image_paths)
-        
-

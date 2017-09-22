@@ -13,11 +13,11 @@ data_loader = DataLoader(obj, batch_size=64,shuffle=True)
 #obj = utils.load_wood()
 #print(obj.__dict__)
 #print(dataset.image_paths)
-for iter, (x,y) in enumerate(data_loader):
+for iter, (x_, _) in enumerate(data_loader):
     if iter == data_loader.dataset.__len__() // 64:
         print('dadada')
         break
-    #print(iter)
+    print(iter)
     #print(x)
-    print(y)
+    #print(y)
    
