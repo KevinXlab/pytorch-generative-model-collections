@@ -130,8 +130,32 @@ def initialize_weights(net):
             m.bias.data.zero_()
 
 '''custom dataset compatible with rebuilt DataLoader'''
+def load_celebA(data_dir, batch_size):
+    transform = transforms.Compose([transforms.CenterCrop(160), transforms.Scale(64), transforms.ToTensor()])
+    dataset = celeba_folder(data_dir, transform)
+    data_loader = DataLoader(dataset=dataset, batch_size=batch_size, shuffle=True)
+
+    return data_loader
+
+class celeba_folder(Dataset):
+    '''celebA dataset'''
+    def __init__(self, data_dir, transform=None):
+        self.image_paths = list(map(lambda x: os.path.join(data_dir, x), os.listdir(data_dir)))
+        self.transform = transform
+
+    def __getitem__(self, index):
+        image_path = self.image_paths[index]
+        image = Image.open(image_path).convert('RGB')
+        label = 1
+        if self.transform is not None:
+            image = self.transform(image)
+        return image, label
+
+    def __len__(self):
+        return len(self.image_paths)    
+
 def load_wood(data_dir, batch_size):
-    transform = transforms.Compose([transforms.ToTensor(), transforms.Normalize((0.5,0.5,0.5),(0.5,0.5,0.5))])
+    transform = transforms.Compose([transforms.Scale(64), transforms.ToTensor()]) # do not need to normalize
     dataset = wood_folder(data_dir, transform)
     data_loader = DataLoader(dataset=dataset, batch_size=batch_size, shuffle=True)
 
@@ -153,7 +177,7 @@ class wood_folder(Dataset):
         size = 64
         #print(image_path)
         image = Image.open(image_path).convert('RGB')
-        image = image.resize((size,size), Image.ANTIALIAS)
+        #image = image.resize((size,size), Image.ANTIALIAS)
         label = 1
         if self.transform is not None:
             image = self.transform(image)

@@ -144,9 +144,7 @@ class GAN(object):
                     [transforms.ToTensor()])),
                 batch_size=self.batch_size, shuffle=True)
         elif self.dataset == 'celebA':
-            self.data_loader = utils.load_celebA('data/celebA', transform=transforms.Compose(
-                [transforms.CenterCrop(160), transforms.Scale(64), transforms.ToTensor()]), batch_size=self.batch_size,
-                                                 shuffle=True)
+            self.data_loader = utils.load_celebA(data_dir='data/celebA', batch_size=self.batch_size)
         elif self.dataset == 'wood':
             self.data_loader = utils.load_wood(data_dir='data/wood/ok', batch_size=self.batch_size)
 
@@ -177,7 +175,6 @@ class GAN(object):
             self.G.train()
             epoch_start_time = time.time()
             for iter, (x_, _) in enumerate(self.data_loader):
-            #for iter, x_ in enumerate(self.data_loader):
                 if iter == self.data_loader.dataset.__len__() // self.batch_size:
                     #print('iter=',self.data_loader.dataset.__len__())
                     #print(iter)
@@ -221,7 +218,7 @@ class GAN(object):
                 G_loss.backward()
                 self.G_optimizer.step()
 
-                if ((iter + 1) % 10) == 0:
+                if ((iter + 1) % 100) == 0:
                     print("Epoch: [%2d] [%4d/%4d] D_loss: %.8f, G_loss: %.8f" %((epoch + 1), (iter + 1), self.data_loader.dataset.__len__() // self.batch_size, D_loss.data[0], G_loss.data[0]))
 
             self.train_hist['per_epoch_time'].append(time.time() - epoch_start_time)
